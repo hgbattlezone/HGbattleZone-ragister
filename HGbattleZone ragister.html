@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Tournament</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        /* General Body Styles */
+        body { 
+            font-family: 'Inter', Arial, sans-serif; 
+            margin: 0; 
+            background-color: #f7f8fc; 
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #5e4b8b; 
+            color: #fff;
+            padding: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header h1 { 
+            margin: 0; 
+            font-size: 22px; 
+        }
+        header button {
+            background-color: #fff; 
+            color: #5e4b8b; 
+            border: none;
+            padding: 8px 16px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        header button:hover {
+            background-color: #f0e9ff;
+        }
+
+        /* Container for page content */
+        .container { 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            background: #fff; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Section Headers */
+        h2 { 
+            color: #5e4b8b; 
+            margin-top: 30px; 
+            border-bottom: 2px solid #f0e9ff;
+            padding-bottom: 10px;
+        }
+
+        /* Form Grid Layout */
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        
+        /* Input Field Styles */
+        input { 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #5e4b8b;
+            box-shadow: 0 0 0 2px #f0e9ff;
+        }
+
+        /* Button Styles */
+        .action-btn {
+            background-color: #5e4b8b; 
+            color: #fff; 
+            border: none;
+            padding: 12px 20px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .action-btn:hover {
+            background-color: #4a3a6e;
+        }
+
+        /* Table Styles */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #ddd; 
+        }
+        th { 
+            background-color: #f0e9ff; 
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Action buttons within tables */
+        .edit-btn, .delete-btn, .match-btn {
+            color: #fff; 
+            border: none; 
+            padding: 6px 12px; 
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 12px;
+            transition: opacity 0.3s;
+        }
+        .edit-btn { background-color: #4caf50; }
+        .delete-btn { background-color: #f44336; }
+        .match-btn { background-color: #5e4b8b; }
+        .edit-btn:hover, .delete-btn:hover, .match-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Leaderboard Medal Style */
+        .medal { 
+            font-size: 20px; 
+            text-align: center;
+        }
+
+        /* Login Page Specific Styles */
+        #loginPage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+        }
+        .login-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-box h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .login-box input {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #loginError {
+            color: #f44336;
+            margin-top: 15px;
+            height: 20px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 18px;
+            }
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <input type="password" id="password" placeholder="Enter Admin Password">
+            <button class="action-btn" style="width: 100%;" onclick="login()">Login</button>
+            <p id="loginError"></p>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL PAGE -->
+    <div id="adminPage" style="display:none;">
+        <header>
+            <h1>Admin Panel - Free Fire Tournament</h1>
+            <button onclick="logout()">Logout</button>
+        </header>
+
+        <div class="container">
+            <h2>🎯 Add / Edit Player</h2>
+            <div class="form-grid">
+                <input type="hidden" id="editIndex">
+                <input type="text" id="name" placeholder="Name">
+                <input type="text" id="playerId" placeholder="Player ID">
+                <input type="text" id="mobile" placeholder="Mobile Number">
+                <input type="email" id="email" placeholder="Email">
+                <input type="text" id="gameUid" placeholder="Game UID">
+                <input type="text" id="teamName" placeholder="Team Name">
+                <input type="number" id="matchesJoined" placeholder="Matches Joined">
+                <input type="number" id="kills" placeholder="Kills">
+                <input type="number" id="wins" placeholder="Wins">
+            </div>
+            <button class="action-btn" onclick="savePlayer()">Save Player</button>
+
+            <h2>👥 All Players</h2>
+            <div style="overflow-x:auto;">
+                <table id="playersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th><th>Player ID</th><th>Mobile</th><th>Email</th>
+                            <th>Game UID</th><th>Team</th><th>Matches</th><th>Kills</th><th>Wins</th><th>Added On</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h2>🏆 Leaderboard</h2>
+             <div style="overflow-x:auto;">
+                <table id="leaderboardTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th><th>Name</th><th>Team</th><th>Matches</th>
+                            <th>Kills</th><th>Wins</th><th>Points</th><th>Added On</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
+            </div>
+
+            <h2>📜 Matches Management</h2>
+            <div class="form-grid">
+                <input type="text" id="matchName" placeholder="Match Name">
+                <input type="text" id="scheduledDate" placeholder="Scheduled Date/Time (e.g. 25 July 6PM)">
+                <button class="action-btn" onclick="addMatch()">Add Match</button>
+            </div>
+             <div style="overflow-x:auto;">
+                <table id="matchesTable">
+                    <thead>
+                        <tr><th>Match Name</th><th>Created On</th><th>Scheduled For</th><th>Players</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MATCH DETAILS PAGE -->
+    <div id="matchPage" style="display:none;">
+        <header>
+            <h1 id="matchTitle">Match Details</h1>
+            <button onclick="showPage('admin')">Back</button>
+        </header>
+
+        <div class="container">
+            <h2>➕ Add Player to Match</h2>
+            <div class="form-grid">
+                <input type="text" id="matchPlayerName" placeholder="Player Name">
+                <input type="text" id="matchGameUid" placeholder="Game UID">
+                <input type="text" id="matchMobile" placeholder="Mobile Number">
+                <input type="text" id="matchGameName" placeholder="Game Name">
+                <input type="number" id="matchKills" placeholder="Kills">
+            </div>
+            <button class="action-btn" onclick="addPlayerToMatch()">Add Player</button>
+
+            <h2>👥 Players in this Match</h2>
+             <div style="overflow-x:auto;">
+                <table id="matchPlayersTable">
+                    <thead>
+                        <tr>
+                            <th>Player Name</th><th>Game UID</th><th>Mobile Number</th>
+                            <th>Game Name</th><th>Kills</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL STATE AND NAVIGATION ---
+        let players = [];
+        let matches = [];
+        let currentMatchId = null;
+        const ADMIN_PASSWORD = "HGbattleZonearadhya";
+
+        // Function to switch between pages
+        function showPage(pageName, data = null) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminPage').style.display = 'none';
+            document.getElementById('matchPage').style.display = 'none';
+
+            if (pageName === 'login') {
+                document.getElementById('loginPage').style.display = 'flex';
+            } else if (pageName === 'admin') {
+                document.getElementById('adminPage').style.display = 'block';
+                // Refresh data on admin page view
+                showAdminPlayers();
+                showLeaderboard();
+                showMatches();
+            } else if (pageName === 'match') {
+                document.getElementById('matchPage').style.display = 'block';
+                currentMatchId = data; // data here is the matchId
+                const match = matches.find(m => m.id === currentMatchId);
+                if (match) {
+                    document.getElementById('matchTitle').innerText = `Match: ${match.name}`;
+                    showMatchPlayers();
+                } else {
+                    alert('Error: Match not found!');
+                    showPage('admin');
+                }
+            }
+        }
+
+        // --- AUTHENTICATION ---
+        function login() {
+            const password = document.getElementById('password').value;
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('isAdmin', 'true');
+                showPage('admin');
+                document.getElementById('password').value = '';
+                document.getElementById('loginError').innerText = '';
+            } else {
+                document.getElementById('loginError').innerText = 'Wrong Password!';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isAdmin');
+            showPage('login');
+        }
+
+        // --- DATA HELPERS ---
+        function getNow() {
+            const d = new Date();
+            return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+        }
+
+        function loadData() {
+            players = JSON.parse(localStorage.getItem('players')) || [];
+            matches = JSON.parse(localStorage.getItem('matches')) || [];
+        }
+
+        function saveData() {
+            localStorage.setItem('players', JSON.stringify(players));
+            localStorage.setItem('matches', JSON.stringify(matches));
+        }
+
+        // --- ADMIN PAGE: PLAYER MANAGEMENT ---
+        function savePlayer() {
+            const editIndex = document.getElementById('editIndex').value;
+            const player = {
+                name: document.getElementById('name').value,
+                playerId: document.getElementById('playerId').value,
+                mobile: document.getElementById('mobile').value,
+                email: document.getElementById('email').value,
+                gameUid: document.getElementById('gameUid').value,
+                teamName: document.getElementById('teamName').value,
+                matchesJoined: document.getElementById('matchesJoined').value,
+                kills: document.getElementById('kills').value,
+                wins: document.getElementById('wins').value,
+            };
+
+            if (editIndex === '') {
+                player.createdAt = getNow();
+                players.push(player);
+            } else {
+                player.createdAt = players[editIndex].createdAt; // Preserve original creation date
+                players[editIndex] = player;
+            }
+            
+            saveData();
+            clearPlayerForm();
+            showAdminPlayers();
+            showLeaderboard();
+        }
+
+        function clearPlayerForm() {
+            document.getElementById('editIndex').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('playerId').value = '';
+            document.getElementById('mobile').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('gameUid').value = '';
+            document.getElementById('teamName').value = '';
+            document.getElementById('matchesJoined').value = '';
+            document.getElementById('kills').value = '';
+            document.getElementById('wins').value = '';
+        }
+
+        function showAdminPlayers() {
+            const tbody = document.querySelector('#playersTable tbody');
+            tbody.innerHTML = '';
+            players.forEach((player, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${player.name}</td><td>${player.playerId}</td><td>${player.mobile}</td><td>${player.email}</td>
+                    <td>${player.gameUid}</td><td>${player.teamName}</td><td>${player.matchesJoined}</td>
+                    <td>${player.kills}</td><td>${player.wins}</td><td>${player.createdAt || ''}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editPlayer(${index})">Edit</button>
+                        <button class="delete-btn" onclick="deletePlayer(${index})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editPlayer(index) {
+            const p = players[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('name').value = p.name;
+            document.getElementById('playerId').value = p.playerId;
+            document.getElementById('mobile').value = p.mobile;
+            document.getElementById('email').value = p.email;
+            document.getElementById('gameUid').value = p.gameUid;
+            document.getElementById('teamName').value = p.teamName;
+            document.getElementById('matchesJoined').value = p.matchesJoined;
+            document.getElementById('kills').value = p.kills;
+            document.getElementById('wins').value = p.wins;
+            window.scrollTo(0, 0); // Scroll to top to see the form
+        }
+
+        function deletePlayer(index) {
+            if (confirm('Are you sure you want to delete this player?')) {
+                players.splice(index, 1);
+                saveData();
+                showAdminPlayers();
+                showLeaderboard();
+            }
+        }
+
+        // --- ADMIN PAGE: LEADERBOARD ---
+        function showLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            leaderboardBody.innerHTML = '';
+            const playersWithPoints = players.map(p => ({
+                ...p,
+                points: (parseInt(p.kills) || 0) * 10 + (parseInt(p.wins) || 0) * 50
+            }));
+            const sortedPlayers = [...playersWithPoints].sort((a, b) => b.points - a.points);
+            
+            sortedPlayers.forEach((player, index) => {
+                let medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="medal">${medal}</td>
+                    <td>${player.name}</td>
+                    <td>${player.teamName}</td>
+                    <td style="text-align:center;">${player.matchesJoined}</td>
+                    <td style="text-align:center;">${player.kills}</td>
+                    <td style="text-align:center;">${player.wins}</td>
+                    <td style="text-align:center;"><strong>${player.points}</strong></td>
+                    <td>${player.createdAt || ''}</td>
+                `;
+                leaderboardBody.appendChild(row);
+            });
+        }
+
+        // --- ADMIN PAGE: MATCH MANAGEMENT ---
+        function addMatch() {
+            const name = document.getElementById('matchName').value.trim();
+            const scheduled = document.getElementById('scheduledDate').value.trim();
+            if (!name || !scheduled) {
+                alert('Please enter both Match Name and Scheduled Date/Time!');
+                return;
+            }
+            matches.push({ id: Date.now().toString(), name, scheduledFor: scheduled, createdAt: getNow(), players: [] });
+            saveData();
+            document.getElementById('matchName').value = '';
+            document.getElementById('scheduledDate').value = '';
+            showMatches();
+        }
+
+        function deleteMatch(index) {
+            if (confirm('Are you sure you want to delete this match?')) {
+                matches.splice(index, 1);
+                saveData();
+                showMatches();
+            }
+        }
+
+        function showMatches() {
+            const tbody = document.querySelector('#matchesTable tbody');
+            tbody.innerHTML = '';
+            matches.forEach((match, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${match.name}</td>
+                    <td>${match.createdAt || ''}</td>
+                    <td>${match.scheduledFor || ''}</td>
+                    <td style="text-align:center;">${match.players.length}</td>
+                    <td>
+                        <button class="match-btn" onclick="showPage('match', '${match.id}')">View</button>
+                        <button class="delete-btn" onclick="deleteMatch(${index})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // --- MATCH DETAILS PAGE ---
+        function showMatchPlayers() {
+            const match = matches.find(m => m.id === currentMatchId);
+            if (!match) return;
+
+            const tbody = document.querySelector('#matchPlayersTable tbody');
+            tbody.innerHTML = '';
+            match.players.forEach((player, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${player.name}</td>
+                    <td>${player.gameUid}</td>
+                    <td>${player.mobile}</td>
+                    <td>${player.gameName}</td>
+                    <td style="text-align:center;">${player.kills}</td>
+                    <td><button class="delete-btn" onclick="deletePlayerFromMatch(${index})">Delete</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function addPlayerToMatch() {
+            const match = matches.find(m => m.id === currentMatchId);
+            if (!match) return;
+
+            const name = document.getElementById('matchPlayerName').value.trim();
+            const gameUid = document.getElementById('matchGameUid').value.trim();
+            const mobile = document.getElementById('matchMobile').value.trim();
+            const gameName = document.getElementById('matchGameName').value.trim();
+            const kills = document.getElementById('matchKills').value.trim();
+
+            if (!name || !gameUid || !mobile || !gameName || kills === '') {
+                alert('Please fill all fields!');
+                return;
+            }
+
+            match.players.push({ name, gameUid, mobile, gameName, kills });
+            saveData();
+            clearMatchPlayerForm();
+            showMatchPlayers();
+        }
+
+        function deletePlayerFromMatch(index) {
+            const match = matches.find(m => m.id === currentMatchId);
+            if (!match) return;
+
+            if (confirm('Are you sure you want to remove this player from the match?')) {
+                match.players.splice(index, 1);
+                saveData();
+                showMatchPlayers();
+            }
+        }
+
+        function clearMatchPlayerForm() {
+            document.getElementById('matchPlayerName').value = '';
+            document.getElementById('matchGameUid').value = '';
+            document.getElementById('matchMobile').value = '';
+            document.getElementById('matchGameName').value = '';
+            document.getElementById('matchKills').value = '';
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            loadData();
+            if (sessionStorage.getItem('isAdmin') === 'true') {
+                showPage('admin');
+            } else {
+                showPage('login');
+            }
+        };
+    </script>
+</body>
+</html>
